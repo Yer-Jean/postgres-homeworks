@@ -9,8 +9,11 @@ packages = [{include = "postgres_homeworks"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 psycopg2 = "^2.9.7"
+dotenv = "^0.0.5"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+psycopg2~=2.9.7

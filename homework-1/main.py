@@ -1,7 +1,9 @@
 """Скрипт для заполнения данными таблиц в БД Postgres."""
-import psycopg2
 import csv
+import os
+import psycopg2
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Унифицируем пути до CSV-файлов
 ROOT = Path(__file__).resolve().parent
@@ -12,9 +14,15 @@ csv_filenames = ['customers_data.csv', 'employees_data.csv', 'orders_data.csv']
 
 
 def main():
+    # Считываем параметры подключения к PostgreSQL из файла .env
+    load_dotenv()
+    parameters = {'host': os.environ.get('HOST'),
+                  'database': os.environ.get('DATABASE'),
+                  'user': os.environ.get('USER_'),
+                  'password': os.environ.get('PASSWORD')}
 
     try:   # Устанавливаем соединение с базой данных
-        connection = psycopg2.connect(host="localhost", database="north", user="postgres", password="15679")
+        connection = psycopg2.connect(**parameters)
     except psycopg2.OperationalError as err:
         print('Ошибка подключения к базе данных:', err)
         return
@@ -36,6 +44,8 @@ def main():
                         # Построчно берем данные из csv-файла и с помощью строки запроса заполняем таблицы БД
                         for row in csv_reader:
                             cur.execute(insert_query, row)
+                        # for row in csv_reader:
+                        #     print(row)
     except (psycopg2.DatabaseError, psycopg2.DataError, psycopg2.IntegrityError) as err:
         print('Ошибка записи в базу данных:', err)
     except FileNotFoundError:
